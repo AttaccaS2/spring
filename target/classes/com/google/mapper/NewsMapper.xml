@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.google.mapper.NewsMapper">
+
+<select id="getList" resultType="com.google.domain.NewsVO">
+<![CDATA[
+SELECT * FROM tbl_news WHERE bno > 0 ORDER BY bno DESC
+]]>
+</select>
+
+<select id="getListWithPaging" resultType="com.google.domain.NewsVO">
+<![CDATA[
+SELECT * FROM tbl_news 
+WHERE bno > 0 ORDER BY bno DESC
+LIMIT #{skip}, #{amount}
+]]>
+</select>
+
+<select id="getListTotal" resultType="int">
+SELECT count(*) FROM tbl_news 
+</select>
+
+<insert id="insert">
+INSERT INTO tbl_news (title,content,writer)
+VALUES (#{title}, #{content}, #{writer})
+</insert>
+
+<insert id="insertLastId">
+<selectKey keyProperty="bno" order="AFTER" resultType="long">
+SELECT last_insert_id()
+</selectKey>
+INSERT INTO tbl_news (title,content,writer)
+VALUES (#{title}, #{content}, #{writer})
+</insert>
+
+<select id="read" resultType="com.google.domain.NewsVO">
+SELECT * FROM tbl_news WHERE bno = #{bno}
+</select>
+
+<delete id="delete">
+DELETE FROM tbl_news WHERE bno = #{bno}
+</delete>
+
+<update id="update">
+UPDATE tbl_news SET title=#{title}, content=#{content}, updatedate = now() 
+WHERE bno = #{bno}
+</update>
+
+</mapper>

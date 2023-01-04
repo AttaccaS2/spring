@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.google.mapper.ReportMapper">
+
+<sql id="criteria">
+<trim prefix="AND (" suffix=")" prefixOverrides = "OR">
+	<foreach item="type" collection="typeArr">
+		<trim prefix="OR">
+			<choose>
+				<when test="type=='C'.toString()">
+					content LIKE concat('%',#{keyword},'%')
+				</when>
+				<when test="type=='W'.toString()">
+					writer LIKE concat('%',#{keyword},'%')
+				</when>
+			</choose>
+		</trim>
+	</foreach>
+</trim>
+</sql>
+
+<select id="getList" resultType="com.google.domain.ReportVO">
+<![CDATA[
+SELECT * FROM tbl_report WHERE bno > 0 ORDER BY bno DESC
+]]>
+</select>
+
+<select id="getListWithPaging" resultType="com.google.domain.ReportVO">
+SELECT * 
+FROM tbl_report 
+<![CDATA[
+WHERE bno > 0
+]]>  
+<include refid="criteria"></include>
+ORDER BY bno DESC
+LIMIT #{skip}, #{amount}
+</select>
+
+<select id="getListTotal" resultType="int">
+<![CDATA[
+SELECT count(*) FROM tbl_report 
+WHERE bno > 0
+]]>
+<include refid="criteria"></include>
+</select>
+
+<insert id="insert">
+INSERT INTO tbl_report (content, note, suggestion, writer)
+VALUES (#{content},#{note},#{suggestion}, #{writer})
+</insert>
+
+<insert id="insertLastId">
+<selectKey keyProperty="bno" order="AFTER" resultType="long">
+SELECT last_insert_id()
+</selectKey>
+INSERT INTO tbl_report (content, note, suggestion, writer)
+VALUES (#{content},#{note},#{suggestion}, #{writer})
+</insert>
+
+<select id="read" resultType="com.google.domain.ReportVO">
+SELECT * FROM tbl_report WHERE bno = #{bno}
+</select>
+
+<delete id="delete">
+DELETE FROM tbl_report WHERE bno = #{bno}
+</delete>
+
+<update id="update">
+UPDATE tbl_report SET content=#{content}, note=#{note}, suggestion=#{suggestion}, updatedate = now() 
+WHERE bno = #{bno}
+</update>
+
+<update id="updateHit">
+UPDATE tbl_report SET hit = hit+1 
+WHERE bno = #{bno}
+</update>
+
+</mapper>

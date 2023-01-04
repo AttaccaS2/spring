@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.google.mapper.ReplyMapper">
+
+<insert id="insert">
+INSERT INTO tbl_reply VALUES(null, #{bno}, #{reply}, #{replyer}, now(), now(), #{tableID});
+</insert>
+
+<select id="read" resultType="com.google.domain.ReplyVO">
+SELECT * FROM tbl_reply WHERE rno = #{rno}
+</select>
+
+<select id="readById" resultType="com.google.domain.ReplyVO">
+SELECT * FROM tbl_reply WHERE replyer = #{replyer}
+</select>
+
+<delete id="delete">
+DELETE FROM tbl_reply WHERE rno = #{rno}
+</delete>
+
+<delete id="deleteAll">
+DELETE FROM tbl_reply WHERE bno=#{bno} AND tableID=#{tableID};
+</delete>
+
+<update id="update">
+UPDATE tbl_reply SET 
+reply= #{reply}, updateDate=now()
+WHERE rno = #{rno}
+</update>
+
+<select id="getListWithPaging" resultType="com.google.domain.ReplyVO">
+SELECT * FROM tbl_reply
+WHERE bno = #{bno}
+ORDER BY rno ASC
+LIMIT #{cri.skip}, #{cri.amount}
+ </select>
+
+<select id="getListWithPaging2" resultType="com.google.domain.ReplyVO">
+SELECT * FROM tbl_reply
+WHERE bno = #{bno} AND tableID=#{tableID}
+ORDER BY rno ASC
+LIMIT #{cri.skip}, #{cri.amount}
+ </select>
+
+<select id="getCountByBno" resultType="int">
+SELECT count(*) FROM tbl_reply
+WHERE bno = #{bno}
+</select>
+
+</mapper>

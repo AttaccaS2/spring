@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.google.mapper.LibMapper">
+
+<sql id="criteria">
+<trim prefix="AND (" suffix=")" prefixOverrides = "OR">
+	<foreach item="type" collection="typeArr">
+		<trim prefix="OR">
+			<choose>
+				<when test="type=='N'.toString()">
+					name LIKE concat('%',#{keyword},'%')
+				</when>
+				<when test="type=='C'.toString()">
+					city LIKE concat('%',#{keyword},'%')
+				</when>
+			</choose>
+		</trim>
+	</foreach>
+</trim>
+</sql>
+
+<select id="getList" resultType="com.google.domain.LibVO">
+<![CDATA[
+SELECT * FROM tbl_all_lib WHERE bno > 0 ORDER BY bno ASC
+]]>
+</select>
+
+<select id="getListWithPaging" resultType="com.google.domain.LibVO">
+SELECT * 
+FROM tbl_all_lib 
+<![CDATA[
+WHERE bno > 0 
+]]>  
+<include refid="criteria"></include>
+ORDER BY bno ASC
+LIMIT #{skip}, #{amount}
+</select>
+
+<select id="getListTotal" resultType="int">
+<![CDATA[
+SELECT count(*) FROM tbl_all_lib 
+WHERE bno > 0
+]]>
+<include refid="criteria"></include>
+</select>
+
+<insert id="insert">
+INSERT INTO tbl_all_lib (bno, name,city,fullCity,books,man,visitPeople,money)
+VALUES (#{bno}, #{name}, #{city}, #{fullCity},#{books},#{man},#{visitPeople},#{money})
+</insert>
+
+<insert id="insertLastId">
+<selectKey keyProperty="bno" order="AFTER" resultType="int">
+SELECT last_insert_id()
+</selectKey>
+INSERT INTO tbl_all_lib (name,city,fullCity,books,man,visitPeople,money)
+VALUES (#{name}, #{city}, #{fullCity},#{books},#{man},#{visitPeople},#{money})
+</insert>
+
+<select id="read" resultType="com.google.domain.LibVO">
+SELECT * FROM tbl_all_lib WHERE bno = #{bno}
+</select>
+
+<delete id="delete">
+DELETE FROM tbl_all_lib WHERE bno = #{bno}
+</delete>
+
+<update id="update">
+UPDATE tbl_all_lib SET name=#{name}, city=#{city} 
+WHERE bno = #{bno}
+</update>
+
+<update id="updateHit">
+UPDATE tbl_all_lib SET hit=hit+1 
+WHERE bno = #{bno}
+</update>
+
+<update id="updateReplyCnt">
+UPDATE tbl_all_lib SET replyCnt = replyCnt + #{amount} 
+WHERE bno = #{bno}
+</update>
+
+</mapper>
