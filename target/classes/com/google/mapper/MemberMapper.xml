@@ -54,7 +54,7 @@ WHERE userid = #{userid};
 
 
 <select id="countPoint" resultType="int">
-SELECT (SELECT 5*count(reply) FROM bigdata.tbl_reply where replyer=#{userid})+(SELECT 10*count(*) FROM bigdata.tbl_board where writer=#{userid});
+SELECT (SELECT 5*count(reply) FROM tbl_reply where replyer=#{userid})+(SELECT 10*count(*) FROM tbl_board where writer=#{userid})+(SELECT 10*count(*) FROM tbl_all_lib where writer=#{userid});
 </select>
 
 </mapper>

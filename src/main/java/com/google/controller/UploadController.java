@@ -137,7 +137,6 @@ public class UploadController {
 			result = new ResponseEntity<byte[]>(FileCopyUtils.copyToByteArray(file)
 					,header, HttpStatus.OK); 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

@@ -184,10 +184,10 @@ function showUploadFile(uploadResultArr){
 $(document).ready(function(){
 	$("button[type=submit]").on("click", function(e){
 		e.preventDefault();		
-		let title = $("#title").val();
-		let content = $("#content").val();
+		let name = $("#name").val();
+		let city = $("#city").val();
 		if(title == ''){
-			alert("제목입력");
+			alert("입력란을 채워주세요");
 			return;
 		}
 		//console.log("submit");

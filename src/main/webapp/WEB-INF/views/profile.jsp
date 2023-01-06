@@ -6,15 +6,21 @@
 
   <div class="profile-header">
 	<div class="profile-cover" style="text-align: center;">
-	<!-- 사진이 올라가는 부분 -->						
+	<!-- 사진이 올라가는 부분 -->	
+<!-- 				<div class="uploadResult">
+					<ul style="display:flex">
+					</ul>
+				</div>		
+						 -->	
 				<div class="avatar avatar-xl avatar-circle" style="text-align: center;">	
 					<img class="img-responsive" src="/resources/assets/images/221.jpg" alt="avatar"/>
 				</div><!-- .avatar -->	
-		<div class="text-center">
-			<h4 class="profile-info-name m-b-lg title-color"><c:out value="${profile.userName}"></c:out></h4>
-			<h5 class="profile-info-name m-b-lg title-color">포인트: <c:out value="${Point}"/>점</h5>
-			<h6>댓글 1개당 5점 개시글 1개당 10점입니다</h6>
-		</div>
+				<div class="text-center">
+				
+					<h4 class="profile-info-name m-b-lg title-color"><c:out value="${profile.userName}"></c:out></h4>
+					<h5 class="profile-info-name m-b-lg title-color">포인트: <c:out value="${Point}"/>점</h5>
+					<h6>댓글 1개당 5점 개시글 1개당 10점입니다</h6>
+				</div>
 	</div><!-- .profile-cover -->
 </div><!-- .profile-header -->
 
@@ -77,12 +83,33 @@
 							<div class="row">
 								<div class="col-md-6 col-sm-6">							
 									
-								<form id="registerForm" method="post" action="">
+								<form id="profileform" method="post" class="form-horizontal">
 								
 								<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token}">
-									
 									<div class="form-group">
-										<input id="userName" type="text" name="uname" class="form-control" placeholder="Name" required="required">										
+										<label for="uploadFile" class="col-sm-3 control-label">new 프로필 사진</label>
+										<div class="col-sm-9 uploadDiv">
+											<input type="file" class="form-control input-sm" name="uploadFile" id="uploadFile"
+												multiple="multiple" >
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="uploadFile" class="col-sm-3 control-label"></label>
+										<div class="col-sm-9 uploadResult">
+											<ul>
+											
+											</ul>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-success btn">등록</button>
+								</form>										
+			
+									<br><br><br><hr><br><br><br>			
+									
+								<form id="registerForm" method="post" action="">
+								<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token}">
+									<div class="form-group">
+										<input id="userName" type="text" name="uname" class="form-control" placeholder="닉네임 변경" required="required">										
 									</div>							
 										<input id="con" type="submit" class="btn btn-primary" value="확인">
 										<small>버튼을 누른 후 새로 고침 하세요</small>
@@ -90,15 +117,6 @@
 								</div><!-- #registerForm -->
 
 							</div><!-- .row -->
-												
-						<div class="form-group">
-							<label for="uploadFile" class="col-sm-3 control-label"></label>
-							<div class="col-sm-9 uploadResult">
-								<ul>
-								
-								</ul>
-							</div>
-						</div>
 									
 						</div><!-- .tab-pane -->
 					</div><!-- .tab-content -->
@@ -113,6 +131,29 @@
 var csrfHeaderName = "${_csrf.headerName}";
 var csrfTokenValue = "${_csrf.token}";
 
+function showUploadFile(uploadResultArr){
+	
+	if(!uploadResultArr||uploadResultArr.length == 0){
+		return;
+	}
+	//만약 안올릴면 return	
+	let str = "";
+	$(uploadResultArr).each(function(i, obj){
+		
+	var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" +obj.uuid+"_"+obj.fileName);
+	var fileRealPath = encodeURIComponent(obj.uploadPath + "/" +obj.uuid+"_"+obj.fileName); //원본 파일
+
+	//data는 대문자더라도 소문자로, obj.image는 true false 둘 중 하나의 값을 가진다.
+	str += "<li data-path='"+obj.uploadPath+"' data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"'>";
+	str += "<img src='../display?fileName=" + fileCallPath + "'>";
+	str += "<span data-realfile='"+fileRealPath+"' data-file='"+fileCallPath+"' data-type='image'>X</span></li>";	
+
+	});
+	//console.log("[str]"+str);
+	
+	$(".uploadResult ul").append(str);
+}
+
 $(document).ready(function(){
 	$("#con").on("click", function(e){
 		e.preventDefault();	
@@ -123,26 +164,98 @@ $(document).ready(function(){
 		
 		console.log("[userName]"+userName+"[userid]"+userid);
 		let data={userName:userName, userid:userid}
-		
-		$.ajax({
-        type : "PUT",         
-        url : "/memberAjax/"+userid,    
-       	contentType : 'application/json',
-        data : JSON.stringify(data),     
-  		beforeSend:function(xhr){
-			xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
-		}, 		        
-        success : function(res){
-        	if(res=='success'){
-        		console.log(res);
-        	}
-        },
-        error : function(XMLHttpRequest, textStatus, errorThrown){ 
-        	console.log("통신 실패.");
-        }
-    }); 
+			
+			$.ajax({
+	        type : "PUT",         
+	        url : "/memberAjax/"+userid,    
+	       	contentType : 'application/json',
+	        data : JSON.stringify(data),     
+	  		beforeSend:function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			}, 		        
+	        success : function(res){
+	        	if(res=='success'){
+	        		console.log(res);
+	        	}
+	        },
+	        error : function(XMLHttpRequest, textStatus, errorThrown){ 
+	        	console.log("통신 실패.");
+	        }
+	    }); 
 		
 	});
+	
+	$("input[type=file]").on("change", function(){
+		console.log("change");
+		var formData = new FormData();
+		var inputfile = $("input[name=uploadFile]");
+		var files = inputfile[0].files;
+		
+		for(var i = 0 ; i < files.length; i++){
+			formData.append("uploadFile", files[i], files[i].name);
+		}
+		
+		$.ajax({
+			url:"/ProfileUploadAjaxAction",
+			processData:false,
+			contentType:false,
+			data:formData,
+			type:"POST",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
+			success:function(result){
+				$("#uploadFile").val('');
+				console.log(result);
+				//파일선택 초기화하고				
+				showUploadFile(result);
+			}
+		});
+
+	});
+	
+
+	$("button[type=submit]").on("click", function(e){
+		e.preventDefault();		
+		console.log("버튼 submit");
+		let str="";
+		$(".uploadResult ul li").each(function(i, obj){
+			console.log(obj);
+			str+='<input type="hidden" name="attachList['+i+'].fileName" value="'+$(obj).data('filename')+'">'; /* data 값 가져올때는 무조건 다 소문자 */
+			str+='<input type="hidden" name="attachList['+i+'].uuid" value="'+$(obj).data('uuid')+'">';
+			str+='<input type="hidden" name="attachList['+i+'].uploadPath" value="'+$(obj).data('path')+'">';
+			str+='<input type="hidden" name="attachList['+i+'].fileType" value="'+$(obj).data('type')+'">';
+		});
+		
+		$("#profileform").append(str).submit();
+	});	
+	
+/* 	var userid = '${profile.userid}';
+	$.getJSON("./getProfile", {userid:userid}, function(arr){
+		//console.log(arr);
+		//console.log(arr.length);
+		
+		let str="";
+		$(arr).each(function(i, attach){
+			
+		var fileCallPath
+		= encodeURIComponent(attach.uploadPath+"/s_"+attach.uuid+"_"+attach.fileName);
+					
+		str+='<li style="padding:5px;">';
+		str+='<img src="../display?fileName='+fileCallPath+'">';
+		str+='</a>'; 
+		str+='</li>';				
+			
+		});
+		
+		if(arr.length==0){
+			str+='<span>프로필이 없습니다.</span>';
+		}
+		
+		$(".uploadResult ul").html(str); //.text()는 글자만 덧붙임
+		//이걸 해줘야 str이 화면에 보임
+		
+	 */
 });	
 </script>
 <%@ include file="includes/footer.jsp" %>   

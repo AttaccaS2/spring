@@ -61,7 +61,7 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional
 	@Override
 	public boolean remove(long bno) {
-
+		//게시판 글 삭제시 댓글도 삭제
 		String str="news";
 		attachMapper.deleteAll(bno,str);
 		replyMapper.deleteAll(bno, str);
@@ -87,6 +87,7 @@ public class BoardServiceImpl implements BoardService {
 			attach.setBno(vo.getBno());
 			attach.setTableID(vo.getTABLE_ID());
 			attachMapper.insert(attach);
+			mapper.updateAttachCnt(vo.getBno(), 1);
 			System.out.println(attach);
 		});
 	}

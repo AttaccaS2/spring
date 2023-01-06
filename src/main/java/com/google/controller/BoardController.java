@@ -87,8 +87,7 @@ public class BoardController {
 		List<BoardAttachVO> attachList = service.getAttachList(bno);
 		if(service.remove(bno)) {
 			deleteFiles(attachList);
-			rttr.addFlashAttribute("result", "success");
-			
+			rttr.addFlashAttribute("result", "success");			
 		}
 		return "redirect:/board/list"+cri.getListLink();
 	}
@@ -128,7 +127,6 @@ public class BoardController {
 					Files.delete(thumNail);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});

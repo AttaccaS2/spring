@@ -16,6 +16,6 @@ public class MemberVO {
 	private Date regDate;
 	private Date updateDate;
 	private List<AuthVO> authList;//외래키로 참조 당하는 중
-	
+	private List<ProfileImageVO> profileImg;
 	
 }
